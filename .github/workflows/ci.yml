@@ -21,7 +21,7 @@ jobs:
             elixir: "1.16.3"
           - otp: "27.2"
             elixir: "1.18.3"
-          - otp: "28.0"
+          - otp: "28.3"
             elixir: "1.19.5"
 
     steps:
@@ -59,7 +59,7 @@ jobs:
 
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: "28.0"
+          otp-version: "28.3"
           elixir-version: "1.19.5"
 
       - name: Restore dependencies cache
@@ -68,8 +68,8 @@ jobs:
           path: |
             deps
             _build
-          key: ${{ runner.os }}-mix-28.0-1.19.5-${{ hashFiles('mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-28.0-1.19.5-
+          key: ${{ runner.os }}-mix-28.3-1.19.5-${{ hashFiles('mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-28.3-1.19.5-
 
       - name: Install dependencies
         run: mix deps.get
