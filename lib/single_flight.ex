@@ -33,6 +33,14 @@ defmodule SingleFlight do
 
     * `:name` - (required) the name to register the server under
 
+  ## Examples
+
+      children = [
+        {SingleFlight, name: MyApp.Flights}
+      ]
+
+      Supervisor.start_link(children, strategy: :one_for_one)
+
   """
   def child_spec(opts) do
     name = Keyword.fetch!(opts, :name)
@@ -65,7 +73,20 @@ defmodule SingleFlight do
   blocks until the in-flight call completes and returns the same result.
 
   Returns `{:ok, result}` on success or `{:error, reason}` if the
-  function raises or the executing process crashes.
+  function raises, throws, or exits.
+
+  ## Examples
+
+      iex> {:ok, _pid} = SingleFlight.start_link(name: :flight_example)
+      iex> SingleFlight.flight(:flight_example, "key", fn -> 42 end)
+      {:ok, 42}
+
+  If the function raises, all callers receive an error:
+
+      iex> {:ok, _pid} = SingleFlight.start_link(name: :flight_raise_example)
+      iex> {:error, {%RuntimeError{message: "boom"}, _stacktrace}} =
+      ...>   SingleFlight.flight(:flight_raise_example, "bad", fn -> raise "boom" end)
+
   """
   @spec flight(server(), key(), (-> term())) :: result()
   def flight(server, key, fun) when is_function(fun, 0) do
@@ -76,8 +97,17 @@ defmodule SingleFlight do
   Like `flight/3` but with a caller-side timeout in milliseconds.
 
   If the timeout expires before the function completes, the calling
-  process exits. The in-flight function continues executing and will
-  still deliver results to other waiting callers.
+  process exits with `{:timeout, _}`. The in-flight function continues
+  executing and will still deliver results to other waiting callers.
+
+  ## Examples
+
+      SingleFlight.flight(MyApp.Flights, "slow-key", fn ->
+        :timer.sleep(5_000)
+        :result
+      end, 1_000)
+      # ** (exit) exited in: GenServer.call/3 — timeout after 1000ms
+
   """
   @spec flight(server(), key(), (-> term()), timeout()) :: result()
   def flight(server, key, fun, timeout) when is_function(fun, 0) do
@@ -90,6 +120,13 @@ defmodule SingleFlight do
   If there is an in-flight call for the key, existing waiters still receive
   the original result. Only new callers after `forget/2` will trigger a
   fresh execution.
+
+  ## Examples
+
+      iex> {:ok, _pid} = SingleFlight.start_link(name: :flight_forget_example)
+      iex> SingleFlight.forget(:flight_forget_example, "user:123")
+      :ok
+
   """
   @spec forget(server(), key()) :: :ok
   def forget(server, key) do
