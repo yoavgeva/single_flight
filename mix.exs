@@ -2,7 +2,7 @@ defmodule SingleFlight.MixProject do
   use Mix.Project
 
   @version "0.1.0"
-  @source_url "https://github.com/yourname/single_flight"
+  @source_url "https://github.com/yoavgeva/single_flight"
 
   def project do
     [
