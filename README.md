@@ -1,5 +1,8 @@
 # SingleFlight
 
+> **Deprecated** — This package has been merged into [`resiliency`](https://github.com/yoavgeva/resiliency).
+> Use `Resiliency.SingleFlight` instead. This repo is archived and will not receive further updates.
+
 [![CI](https://github.com/yoavgeva/single_flight/actions/workflows/ci.yml/badge.svg)](https://github.com/yoavgeva/single_flight/actions/workflows/ci.yml)
 [![Hex.pm](https://img.shields.io/hexpm/v/single_flight.svg)](https://hex.pm/packages/single_flight)
 [![Docs](https://img.shields.io/badge/hex-docs-blue.svg)](https://hexdocs.pm/single_flight)
